@@ -12,6 +12,7 @@ pub fn tokenize(source: &str) -> Result<Vec<Token>, Box<dyn std::error::Error>> 
             Section::new("env", "$", "$"),
         ],
         &[
+            ('=', "Equal"),
             ('&', "And"),
             ('|', "Or"),
             ('\n', "NewLine"),

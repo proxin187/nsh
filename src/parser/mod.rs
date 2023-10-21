@@ -25,6 +25,8 @@ pub enum Node {
 
     Alias(Value, Value),
 
+    SetEnv(String, Value),
+
     Pipe(Box<Node>, Box<Node>),
 
     // Nop stands for no operation
@@ -62,7 +64,7 @@ impl<'a> Ast<'a> {
             return Value::Env(env);
         } else {
             let loc = token.loc();
-            self.errors.handle_err(NshError::Parser(format!("{}:{}: expected value but got {:?}", loc.0, loc.1, token)));
+            self.errors.handle_err(NshError::Parser(format!("{}:{}: expected value but got `{}`", loc.0, loc.1, token.as_string())));
             return Value::default();
         }
     }
@@ -87,7 +89,9 @@ impl<'a> Ast<'a> {
             });
         } else if node[0].is_keyword("cd").is_ok() {
             if node.len() < 2 {
-                self.errors.push(NshError::Parser("expected directory".to_string()));
+                let loc = node[0].loc();
+                self.errors.handle_err(NshError::Parser(format!("{}:{}: expected directory", loc.0, loc.1)));
+                println!("[SYNTAX]: cd <Value>");
                 return None;
             }
 
@@ -100,20 +104,41 @@ impl<'a> Ast<'a> {
                 // empty alias simply prints all the aliases
                 return Some(Node::Alias(Value::default(), Value::default()));
             } else if node.len() < 3 {
-                self.errors.handle_err(NshError::Parser("alias expects 2 arguments".to_string()));
+                let loc = node[0].loc();
+                self.errors.handle_err(NshError::Parser(format!("{}:{}: alias expects 2 arguments", loc.0, loc.1)));
+                println!("[SYNTAX]: alias <Value> <Value>");
                 return None;
             }
 
             return Some(Node::Alias(self.value(&node[1]), self.value(&node[2])));
-        }
+        } else if let Ok(env) = node[0].is_section("env") {
+            let loc = node[0].loc();
 
-        unreachable!();
+            if node.len() < 3 {
+                self.errors.handle_err(NshError::Parser(format!("{}:{}: env expected 2 arguments", loc.0, loc.1)));
+            } else if node[1].is_symbol("Equal").is_err() {
+                self.errors.handle_err(NshError::Parser(format!("{}:{}: expected `=` but got `{}`", loc.0, loc.1, node[1].as_string())));
+            } else {
+                // no errors
+                return Some(Node::SetEnv(env, self.value(&node[2])));
+            }
+
+            // in this case there was an error
+            println!("[SYNTAX]: ${}$ = <Value>", env);
+            return None;
+
+        } else {
+            let loc = node[0].loc();
+            self.errors.handle_err(NshError::Parser(format!("{}:{}: expected keyword but got `{}`", loc.0, loc.1, node[0].as_string())));
+            return None;
+        }
     }
 
-    fn tokens_to_string(&self, tokens: &[Token]) -> String {
+    pub fn tokens_to_string(tokens: &[Token]) -> String {
         let mut string = String::new();
         for token in tokens {
             let token = token.clone();
+            string.push(' ');
             string.push_str(&token.as_string());
         }
         string
@@ -123,12 +148,17 @@ impl<'a> Ast<'a> {
         // alias simply takes a sequence of tokens and matches it up to each alias and replaces it
         // if it matches else it returns it self
 
+        let mut output: Vec<Token> = node.to_vec();
+
         for alias in &config.alias {
-            if self.tokens_to_string(&alias.0) == self.tokens_to_string(node) {
-                return alias.1.clone();
+            if let Some(idx) = output.iter().position(|elem| elem == &alias.0) {
+                output.remove(idx);
+                for elem in alias.1.iter().rev() {
+                    output.insert(idx, elem.clone());
+                }
             }
         }
-        node.to_vec()
+        output
     }
 
     fn push(&mut self, node: &[Token], config: &Config) {

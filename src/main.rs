@@ -5,14 +5,15 @@ mod parser;
 mod interpreter;
 mod config;
 mod escape;
+mod completion;
+mod readline;
+mod signals;
 
-use std::io::Write;
 use std::fs;
 use std::env;
 use std::process;
+
 use argin::Argin;
-use rustyline::error::ReadlineError;
-use rustyline::DefaultEditor;
 
 
 #[derive(Clone, Debug)]
@@ -26,6 +27,7 @@ pub enum NshError {
     Parser(String),
     History(String),
     Utf8(String),
+    Alias(String),
 }
 
 pub struct NshErrorType {
@@ -85,6 +87,9 @@ impl NshErrorType {
                 NshError::Utf8(err) => {
                     println!("[ERROR]: Failed to parse utf8 -> `{err}`");
                 },
+                NshError::Alias(err) => {
+                    println!("[ERROR]: Alias failed with message -> `{err}`");
+                },
             }
         }
 
@@ -107,7 +112,7 @@ impl Nsh {
     pub fn new() -> Nsh {
         Nsh {
             errors: NshErrorType::new(),
-            vm: interpreter::Machine::empty(),
+            vm: interpreter::Machine::new(),
             config: config::Config::new(),
         }
     }
@@ -142,9 +147,8 @@ impl Nsh {
     }
 
     fn prompt(&mut self) -> Result<String, Box<dyn std::error::Error>> {
-        let ps1 = self.config.prompt.clone(); // to prevent immutable borrow inside mutable borrow
+        let ps1 = env::var("PS1").unwrap_or(String::new());
         let output = self.exec_line(&ps1, true);
-        std::io::stdout().flush()?;
         if let Some(proc_output) = &output {
             Ok(proc_output.clone())
         } else {
@@ -169,10 +173,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         return Ok(());
     }
 
+    if let Err(err) = signals::handle_signals() {
+        println!("[ERROR]: failed to setup signal handlers: {}", err.to_string());
+        process::exit(1);
+    }
+
     // create new nsh instance
     let mut nsh = Nsh::new();
     nsh.vm = interpreter::Machine::new();
-    let mut rl = DefaultEditor::new()?;
+    let mut rl = readline::ReadLine::new();
 
     // load history and config
     let path = match env::var("HOME") {
@@ -188,37 +197,25 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         nsh.errors.handle_err(NshError::History(err.to_string()));
     }
 
+
     if let Err(err) = nsh.load_config(&format!("{path}/.config/nsh/conf.nsh")) {
         nsh.errors.handle_err(NshError::Config(err.to_string()));
     }
 
-    // Main loop
     loop {
         let prompt = nsh.prompt();
         if let Err(err) = &prompt {
             nsh.errors.push(NshError::Prompt(err.to_string()));
         }
 
-        let readline = rl.readline(&prompt.unwrap());
+        let line = rl.input(&prompt.unwrap());
 
-        match readline {
-            Ok(line) => {
-                if let Err(err) = rl.add_history_entry(line.as_str()) {
-                    nsh.errors.handle_err(NshError::History(err.to_string()));
-                }
-                nsh.exec_line(&(line + "\n"), false);
-            },
-            Err(ReadlineError::Interrupted) => {
-                // intentionally dont exit when getting ctrl-c
-                println!("^C");
-            },
-            Err(ReadlineError::Eof) => {
-                println!("^D");
-                return Ok(());
+        match line {
+            Ok(_) => {
+                nsh.exec_line(&(rl.buffer.clone() + "\n"), false);
             },
             Err(err) => {
-                println!("Unknown err: {}", err.to_string());
-                return Ok(());
+                nsh.errors.push(NshError::ReadStdin(err.to_string()));
             },
         }
 

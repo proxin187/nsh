@@ -1,4 +1,4 @@
-use crate::parser::{Node, Value};
+use crate::parser::{Node, Value, Ast};
 use crate::{NshErrorType, NshError};
 use crate::escape;
 use crate::config::Config;
@@ -15,12 +15,6 @@ pub struct Machine {
 
 impl Machine {
     pub fn new() -> Machine {
-        Machine {
-            errors: NshErrorType::new(),
-        }
-    }
-
-    pub fn empty() -> Machine {
         Machine {
             errors: NshErrorType::new(),
         }
@@ -80,9 +74,9 @@ impl Machine {
         }
     }
 
-    fn print_alias(&self, aliases: &Vec<(Vec<Token>, Vec<Token>)>) {
+    fn print_alias(&self, aliases: &Vec<(Token, Vec<Token>)>) {
         for alias in aliases {
-            println!("{:?}: {:?}", alias.0, alias.1);
+            println!("{}: {}", alias.0.as_string(), Ast::tokens_to_string(&alias.1));
         }
     }
 
@@ -142,6 +136,7 @@ impl Machine {
                 Node::Alias(original, replacement) => {
                     if *original == Value::default() {
                         // print all the aliases
+                        // TODO: append output to output if output is on
                         self.print_alias(&config.alias);
                     } else {
                         // append a alias
@@ -155,9 +150,21 @@ impl Machine {
                             return self.ret_exec(output_on, output);
                         }
 
+                        // to prevent use after move
+                        let original_signature = original_signature.unwrap();
+
+                        let original_len = original_signature.len();
+                        if original_len != 1 {
+                            self.errors.push(NshError::Alias("Alias can only accept 1 token as the match".to_string()));
+                            return self.ret_exec(output_on, output);
+                        }
+
                         // unwrap is safe because we checked for errors earlier
-                        config.alias.push((original_signature.unwrap(), replacement_signature.unwrap()));
+                        config.alias.push((original_signature[0].clone(), replacement_signature.unwrap()));
                     }
+                },
+                Node::SetEnv(env, value) => {
+                    env::set_var(env, self.value(value));
                 },
                 Node::Pipe(_, _) => {
                     // TODO: implement pipe

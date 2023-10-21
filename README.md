@@ -13,13 +13,13 @@
 
 ## Description
 ---
-The N shell is focusing on performance and simplicity while still being useful.
+The N shell is focusing on performance and simplicity while still being useful. nsh is shipped with a custom implementation of readline and auto completion.
 
 ## Roadmap
 ---
 - [x] Easy Configuration (~/.config/nsh/conf.nsh)
 - [x] Environment variable integration
-- [x] Configuration trough builtin keywords
+- [ ] Signal handling
 
 ## Installation
 ---
@@ -57,9 +57,10 @@ The features of nsh are listed below but these specifications are simple, if you
 
 | Name  | Usage                            |
 | ---   | ---                                  |
-| `program` | `<program> [ARGS]` |
+| `Executable` | `<executable> [ARGS]` |
 | `Change directory` | `cd <location>` |
 | `Alias`  | `Alias <original> <replacement>` |
+| `Enviroment Variable`  | `$<var>$ = <value>` |
 
 ## Contribute
 ---

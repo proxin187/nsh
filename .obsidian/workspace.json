@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "5cd8bc1b2321e752",
+        "id": "8b55ac483c23dd55",
         "type": "tabs",
         "children": [
           {
-            "id": "ac623e033f495856",
+            "id": "2a01908ccef47315",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -146,20 +146,21 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "ac623e033f495856",
+  "active": "2a01908ccef47315",
   "lastOpenFiles": [
-    "target/debug/deps/nsh-d237f7784eee1f55",
-    "target/debug/incremental/nsh-w5dgypxuxkx2/s-gpm3hkssiy-19qyrz0-2p0to76wkpb4mbjw40jv8g7ub/zfurcsbi2a3wfyi.o",
-    "target/debug/incremental/nsh-w5dgypxuxkx2/s-gpm3hkssiy-19qyrz0-2p0to76wkpb4mbjw40jv8g7ub/x1l4dok5mt8dayp.o",
-    "target/debug/incremental/nsh-w5dgypxuxkx2/s-gpm3hkssiy-19qyrz0-2p0to76wkpb4mbjw40jv8g7ub/work-products.bin",
-    "target/debug/incremental/nsh-w5dgypxuxkx2/s-gpm3hkssiy-19qyrz0-2p0to76wkpb4mbjw40jv8g7ub/w6kk5u1djmh2gwc.o",
-    "target/debug/incremental/nsh-w5dgypxuxkx2/s-gpm3hkssiy-19qyrz0-2p0to76wkpb4mbjw40jv8g7ub/v7ev787oug1hq4n.o",
-    "target/debug/incremental/nsh-w5dgypxuxkx2/s-gpm3hkssiy-19qyrz0-2p0to76wkpb4mbjw40jv8g7ub/qxmx8p21luv3m5l.o",
-    "target/debug/incremental/nsh-w5dgypxuxkx2/s-gpm3hkssiy-19qyrz0-2p0to76wkpb4mbjw40jv8g7ub/query-cache.bin",
-    "target/debug/incremental/nsh-w5dgypxuxkx2/s-gpm3hkssiy-19qyrz0-2p0to76wkpb4mbjw40jv8g7ub/pl0jqikub4wh05m.o",
-    "target/debug/incremental/nsh-w5dgypxuxkx2/s-gpm3hkssiy-19qyrz0-2p0to76wkpb4mbjw40jv8g7ub/g8q7u2kzwcr04jn.o",
-    "target/debug/incremental/nsh-w5dgypxuxkx2/s-gpm3hkssiy-19qyrz0-2p0to76wkpb4mbjw40jv8g7ub/f8n6fkcbsezhnm8.o",
-    "logo.png",
-    "README.md"
+    "Untitled",
+    "target/doc/static.files/SourceSerif4-LICENSE-3bb119e13b1258b7.md",
+    "README.md",
+    "target/debug/incremental/nsh-3bw3hiy3gxydk/s-gpmx2v87hj-1bh9jbo-86siq0atv625yfomvbe65wh31/work-products.bin",
+    "target/debug/incremental/nsh-3bw3hiy3gxydk/s-gpmx2v87hj-1bh9jbo-86siq0atv625yfomvbe65wh31/query-cache.bin",
+    "target/debug/incremental/nsh-3bw3hiy3gxydk/s-gpmx2v87hj-1bh9jbo-86siq0atv625yfomvbe65wh31/dep-graph.bin",
+    "target/debug/incremental/nsh-3bw3hiy3gxydk/s-gpmx2v87hj-1bh9jbo-86siq0atv625yfomvbe65wh31",
+    "target/debug/incremental/nsh-bfcsive1lsnn/s-gpmx2v9hmm-1et9hnm-8v9nyyhvugtrzoyx8h320jpc7/work-products.bin",
+    "target/debug/incremental/nsh-bfcsive1lsnn/s-gpmx2v9hmm-1et9hnm-8v9nyyhvugtrzoyx8h320jpc7/query-cache.bin",
+    "target/debug/incremental/nsh-bfcsive1lsnn/s-gpmx2v9hmm-1et9hnm-8v9nyyhvugtrzoyx8h320jpc7/dep-graph.bin",
+    "target/debug/incremental/nsh-bfcsive1lsnn/s-gpmx2v9hmm-1et9hnm-8v9nyyhvugtrzoyx8h320jpc7",
+    "target/debug/deps/rmetab0JUj7",
+    "target/debug/incremental/nsh-bfcsive1lsnn/s-gpmx2v9hmm-1et9hnm-working/dep-graph.part.bin",
+    "logo.png"
   ]
 }
